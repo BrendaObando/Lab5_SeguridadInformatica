@@ -8,21 +8,44 @@ async function sendMessage(page, message) {
 
 test.beforeEach(async ({ page }) => page.goto('/'));
 
-test('muestra una imagen válida en el chat', async ({ page }) => {
+async function expectNoHorizontalOverflow(page) {
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+}
+
+test('muestra una imagen válida y adaptable en el chat', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
   await sendMessage(page, 'https://placehold.co/120x80.png');
   const image = page.getByAltText('Imagen compartida en el chat');
   await expect(image).toHaveAttribute('src', 'https://placehold.co/120x80.png');
   await expect(image).toBeVisible();
   await expect(image).toHaveJSProperty('complete', true);
   expect(await image.evaluate((element) => element.naturalWidth)).toBeGreaterThan(0);
+  await expectNoHorizontalOverflow(page);
 });
 
-test('muestra el reproductor para un video válido de YouTube', async ({ page }) => {
+test('muestra un reproductor de video adaptable', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
   await sendMessage(page, 'https://youtu.be/qYwlqx-JLok');
   const frame = page.getByTitle('Video de YouTube compartido en el chat');
   await expect(frame).toHaveAttribute('src', 'https://www.youtube.com/embed/qYwlqx-JLok');
   await expect(frame).toBeVisible();
   await expect.poll(() => page.frames().map((childFrame) => childFrame.url()).join('\n')).toContain('youtube.com/embed/qYwlqx-JLok');
+  await expectNoHorizontalOverflow(page);
+});
+
+test('ajusta un mensaje de texto largo al ancho disponible', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  const message = 'mensaje-largo-'.repeat(40);
+  await sendMessage(page, message);
+  await expect(page.locator('.message-text')).toHaveText(message);
+  await expectNoHorizontalOverflow(page);
+});
+
+test('avisa sobre un enlace no permitido sin incrustarlo', async ({ page }) => {
+  await sendMessage(page, 'https://example.com/articulo');
+  await expect(page.locator('.message-text')).toHaveText('https://example.com/articulo');
+  await expect(page.getByRole('status')).toHaveText('Este enlace no está permitido para vista previa.');
+  await expect(page.locator('#messages img, #messages iframe, #messages a')).toHaveCount(0);
 });
 
 test('no abre un alert ni interpreta scripts enviados por el usuario', async ({ page }) => {

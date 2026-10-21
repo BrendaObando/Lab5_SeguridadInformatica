@@ -34,6 +34,7 @@ function normalizeMessage(message) {
   if (isValidImageUrl(value)) return { type: 'image', value };
   const videoId = getYouTubeVideoId(value);
   if (videoId) return { type: 'video', value: `https://www.youtube.com/embed/${videoId}` };
+  if (parseHttpUrl(value)) return { type: 'unsupported-link', value };
   // El cliente muestra este valor mediante textContent; nunca se interpreta como HTML.
   return { type: 'text', value };
 }

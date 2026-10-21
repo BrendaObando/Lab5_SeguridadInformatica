@@ -26,6 +26,9 @@ describe('integración Socket.IO: backend y una-lib', () => {
   test('acepta y transforma una URL válida de video', async () => {
     await expect(sendMessage('https://youtu.be/qYwlqx-JLok')).resolves.toMatchObject({ tipo: 'video', mensaje: 'https://www.youtube.com/embed/qYwlqx-JLok' });
   });
+  test('identifica una URL HTTP(S) no permitida sin incrustarla', async () => {
+    await expect(sendMessage('https://example.com/articulo')).resolves.toMatchObject({ tipo: 'unsupported-link', mensaje: 'https://example.com/articulo' });
+  });
   test('no interpreta un script: lo devuelve como texto seguro', async () => {
     await expect(sendMessage('<script>alert(1)</script>')).resolves.toMatchObject({ tipo: 'text', mensaje: '<script>alert(1)</script>' });
   });

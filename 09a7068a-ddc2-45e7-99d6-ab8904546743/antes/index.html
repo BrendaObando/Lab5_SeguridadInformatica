@@ -3,12 +3,14 @@
   <head>
     <meta charset="utf-8"><title>Chat Socket.IO UNA</title>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; } body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; } form button { width: 10%; background: rgb(130,224,255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0 0 40px; padding: 0; } #messages li { padding: 5px 10px; } #messages li:nth-child(odd) { background: #eee; }
-      #nombre, #m { display: inline-block; } #m { width: 69%; margin-right: 4px; } #nombre { width: 20%; }
-      .chat-image { display: block; max-height: 400px; max-width: 400px; margin-top: 6px; } .chat-video { display: block; width: 560px; max-width: 100%; height: 315px; margin-top: 6px; }
+      * { box-sizing: border-box; } body { margin: 0; background: #f4f7fb; color: #182230; font: 16px/1.45 Arial, sans-serif; }
+      form { position: fixed; z-index: 1; bottom: 0; display: grid; grid-template-columns: minmax(7rem, .35fr) minmax(0, 1fr) auto; gap: .5rem; width: 100%; padding: .75rem; background: #172033; }
+      form input { min-width: 0; padding: .65rem .75rem; border: 1px solid #aeb8c8; border-radius: .35rem; font: inherit; } form button { padding: .65rem 1rem; border: 0; border-radius: .35rem; background: #76d5f5; color: #10202a; font: inherit; font-weight: 700; cursor: pointer; }
+      #messages { display: grid; gap: .75rem; max-width: 62rem; margin: 0 auto 5.5rem; padding: 1rem; list-style: none; } .chat-message { min-width: 0; padding: .85rem 1rem; border: 1px solid #d6dee9; border-radius: .6rem; background: #fff; box-shadow: 0 1px 2px rgb(15 23 42 / 8%); }
+      .message-author { display: block; margin-bottom: .35rem; font-weight: 700; } .message-content { min-width: 0; overflow-wrap: anywhere; } .message-text { white-space: pre-wrap; }
+      .message-warning { margin: .5rem 0 0; color: #8a3b00; font-size: .9rem; font-weight: 700; }
+      .chat-image { display: block; width: auto; max-width: 100%; max-height: 30rem; height: auto; margin-top: .5rem; border-radius: .4rem; } .chat-video { display: block; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; height: auto; margin-top: .5rem; border: 0; border-radius: .4rem; }
+      @media (max-width: 38rem) { form { grid-template-columns: 1fr; } #messages { margin-bottom: 10rem; padding: .75rem; } }
     </style>
   </head>
   <body>
@@ -23,11 +25,14 @@
         colorHexTxt ||= getRandomColor(); socket.emit('Evento-Mensaje-Server', JSON.stringify({ nombre, mensaje, color: colorHexTxt })); document.getElementById('m').value = '';
       });
       socket.on('Evento-Mensaje-Server', (rawMessage) => {
-        const message = JSON.parse(rawMessage); const item = document.createElement('li'); const author = document.createElement('b');
+        const message = JSON.parse(rawMessage); const item = document.createElement('li'); const author = document.createElement('b'); const content = document.createElement('div');
+        item.className = 'chat-message'; author.className = 'message-author'; content.className = 'message-content';
         author.style.color = message.color; author.textContent = `${message.nombre}: `; item.append(author);
-        if (message.tipo === 'image') { const image = document.createElement('img'); image.className = 'chat-image'; image.alt = 'Imagen compartida en el chat'; image.src = message.mensaje; item.append(image); }
-        else if (message.tipo === 'video') { const frame = document.createElement('iframe'); frame.className = 'chat-video'; frame.title = 'Video de YouTube compartido en el chat'; frame.src = message.mensaje; frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'; frame.allowFullscreen = true; item.append(frame); }
-        else { const text = document.createElement('span'); text.textContent = message.mensaje; item.append(text); }
+        if (message.tipo === 'image') { const image = document.createElement('img'); image.className = 'chat-image'; image.alt = 'Imagen compartida en el chat'; image.src = message.mensaje; content.append(image); }
+        else if (message.tipo === 'video') { const frame = document.createElement('iframe'); frame.className = 'chat-video'; frame.title = 'Video de YouTube compartido en el chat'; frame.src = message.mensaje; frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'; frame.allowFullscreen = true; content.append(frame); }
+        else if (message.tipo === 'unsupported-link') { const text = document.createElement('span'); const warning = document.createElement('p'); text.className = 'message-text'; text.textContent = message.mensaje; warning.className = 'message-warning'; warning.setAttribute('role', 'status'); warning.textContent = 'Este enlace no está permitido para vista previa.'; content.append(text, warning); }
+        else { const text = document.createElement('span'); text.className = 'message-text'; text.textContent = message.mensaje; content.append(text); }
+        item.append(content);
         messages.append(item); window.scrollTo(0, document.body.scrollHeight);
       });
     </script>
