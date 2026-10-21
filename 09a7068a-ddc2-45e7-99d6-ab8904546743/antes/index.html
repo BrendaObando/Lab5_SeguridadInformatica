@@ -4,18 +4,37 @@
     <meta charset="utf-8"><title>Chat Socket.IO UNA</title>
     <style>
       * { box-sizing: border-box; } body { margin: 0; background: #f4f7fb; color: #182230; font: 16px/1.45 Arial, sans-serif; }
-      form { position: fixed; z-index: 1; bottom: 0; display: grid; grid-template-columns: minmax(7rem, .35fr) minmax(0, 1fr) auto; gap: .5rem; width: 100%; padding: .75rem; background: #172033; }
-      form input { min-width: 0; padding: .65rem .75rem; border: 1px solid #aeb8c8; border-radius: .35rem; font: inherit; } form button { padding: .65rem 1rem; border: 0; border-radius: .35rem; background: #76d5f5; color: #10202a; font: inherit; font-weight: 700; cursor: pointer; }
-      #messages { display: grid; gap: .75rem; max-width: 62rem; margin: 0 auto 5.5rem; padding: 1rem; list-style: none; } .chat-message { min-width: 0; padding: .85rem 1rem; border: 1px solid #d6dee9; border-radius: .6rem; background: #fff; box-shadow: 0 1px 2px rgb(15 23 42 / 8%); }
+      .chat-header { padding: 1.4rem max(1rem, calc((100% - 62rem) / 2)); color: #f8fbff; background: linear-gradient(120deg, #172033, #244c70); } .chat-header h1 { margin: 0; font-size: clamp(1.4rem, 4vw, 2rem); } .chat-kicker { margin: 0 0 .15rem; color: #8be0ff; font-size: .78rem; font-weight: 800; letter-spacing: .16em; } .chat-subtitle { margin: .2rem 0 0; color: #d4e4f4; }
+      .chat-shell { max-width: 62rem; margin: 0 auto; } .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+      .chat-composer { position: fixed; z-index: 1; bottom: 0; display: grid; grid-template-columns: minmax(9rem, .35fr) minmax(0, 1fr) auto; gap: .5rem; width: 100%; padding: .75rem max(1rem, calc((100% - 62rem) / 2)); background: #172033; }
+      .field { display: grid; gap: .25rem; color: #e5eef8; font-size: .85rem; font-weight: 700; } .chat-composer input { min-width: 0; padding: .65rem .75rem; border: 1px solid #aeb8c8; border-radius: .35rem; font: inherit; } .chat-composer button { align-self: end; padding: .65rem 1rem; border: 0; border-radius: .35rem; background: #76d5f5; color: #10202a; font: inherit; font-weight: 700; cursor: pointer; }
+      .chat-composer input:focus-visible, .chat-composer button:focus-visible { outline: 3px solid #ffe27a; outline-offset: 2px; }
+      #messages { display: grid; gap: .75rem; margin: 0 0 6.4rem; padding: 1rem; list-style: none; } .chat-message { min-width: 0; padding: .85rem 1rem; border: 1px solid #d6dee9; border-left: 4px solid #5a92bf; border-radius: .6rem; background: #fff; box-shadow: 0 1px 2px rgb(15 23 42 / 8%); } .chat-message--image, .chat-message--video { border-left-color: #427c53; } .chat-message--unsupported-link { border-left-color: #bf741f; background: #fffaf1; }
       .message-author { display: block; margin-bottom: .35rem; font-weight: 700; } .message-content { min-width: 0; overflow-wrap: anywhere; } .message-text { white-space: pre-wrap; }
       .message-warning { margin: .5rem 0 0; color: #8a3b00; font-size: .9rem; font-weight: 700; }
       .chat-image { display: block; width: auto; max-width: 100%; max-height: 30rem; height: auto; margin-top: .5rem; border-radius: .4rem; } .chat-video { display: block; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; height: auto; margin-top: .5rem; border: 0; border-radius: .4rem; }
-      @media (max-width: 38rem) { form { grid-template-columns: 1fr; } #messages { margin-bottom: 10rem; padding: .75rem; } }
+      @media (max-width: 38rem) { .chat-composer { grid-template-columns: 1fr; } #messages { margin-bottom: 13.5rem; padding: .75rem; } }
     </style>
   </head>
   <body>
-    <ul id="messages" aria-live="polite"></ul>
-    <form action=""><input id="nombre" autocomplete="off" placeholder="Username" aria-label="Username"><input id="m" autocomplete="off" placeholder="Escriba un mensaje" aria-label="Escriba un mensaje"><button type="submit">Send</button></form>
+    <header class="chat-header">
+      <div>
+        <p class="chat-kicker">UNA</p>
+        <h1>Chat seguro</h1>
+        <p class="chat-subtitle">Comparte mensajes, imágenes y videos validados.</p>
+      </div>
+    </header>
+    <main class="chat-shell">
+      <section class="chat-history" aria-labelledby="history-title">
+        <h2 id="history-title" class="visually-hidden">Historial de mensajes</h2>
+        <ul id="messages" aria-live="polite"></ul>
+      </section>
+    </main>
+    <form class="chat-composer" action="" aria-label="Compositor de mensajes">
+      <label class="field" for="nombre">Tu nombre<input id="nombre" autocomplete="off" placeholder="Username"></label>
+      <label class="field" for="m">Mensaje<input id="m" autocomplete="off" placeholder="Escriba un mensaje"></label>
+      <button type="submit">Enviar</button>
+    </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       let colorHexTxt = ''; const socket = io(); const messages = document.getElementById('messages');
@@ -26,7 +45,7 @@
       });
       socket.on('Evento-Mensaje-Server', (rawMessage) => {
         const message = JSON.parse(rawMessage); const item = document.createElement('li'); const author = document.createElement('b'); const content = document.createElement('div');
-        item.className = 'chat-message'; author.className = 'message-author'; content.className = 'message-content';
+        item.className = `chat-message chat-message--${message.tipo}`; author.className = 'message-author'; content.className = 'message-content';
         author.style.color = message.color; author.textContent = `${message.nombre}: `; item.append(author);
         if (message.tipo === 'image') { const image = document.createElement('img'); image.className = 'chat-image'; image.alt = 'Imagen compartida en el chat'; image.src = message.mensaje; content.append(image); }
         else if (message.tipo === 'video') { const frame = document.createElement('iframe'); frame.className = 'chat-video'; frame.title = 'Video de YouTube compartido en el chat'; frame.src = message.mensaje; frame.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'; frame.allowFullscreen = true; content.append(frame); }

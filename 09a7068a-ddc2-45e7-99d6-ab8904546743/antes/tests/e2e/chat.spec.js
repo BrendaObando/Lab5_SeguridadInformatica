@@ -1,9 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
 async function sendMessage(page, message) {
-  await page.getByLabel('Username').fill('Evidencia');
-  await page.getByLabel('Escriba un mensaje').fill(message);
-  await page.getByRole('button', { name: 'Send' }).click();
+  await page.getByLabel('Tu nombre').fill('Evidencia');
+  await page.getByLabel('Mensaje', { exact: true }).fill(message);
+  await page.getByRole('button', { name: 'Enviar' }).click();
 }
 
 test.beforeEach(async ({ page }) => page.goto('/'));
@@ -38,6 +38,17 @@ test('ajusta un mensaje de texto largo al ancho disponible', async ({ page }) =>
   const message = 'mensaje-largo-'.repeat(40);
   await sendMessage(page, message);
   await expect(page.locator('.message-text')).toHaveText(message);
+  await expectNoHorizontalOverflow(page);
+});
+
+test('mantiene el compositor accesible y utilizable a 375 px', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 720 });
+  await expect(page.getByRole('heading', { name: 'Chat seguro' })).toBeVisible();
+  await expect(page.getByLabel('Tu nombre')).toBeVisible();
+  await expect(page.getByLabel('Mensaje', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Enviar' })).toBeVisible();
+  await page.getByLabel('Tu nombre').focus();
+  await expect(page.getByLabel('Tu nombre')).toBeFocused();
   await expectNoHorizontalOverflow(page);
 });
 
