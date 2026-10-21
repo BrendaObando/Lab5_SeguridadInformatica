@@ -1,12 +1,12 @@
 
 Running 3 tests using 1 worker
 
-  ok 1 [chromium] › tests\e2e\chat.spec.js:11:1 › muestra una imagen válida en el chat (1.8s)
-  ok 2 [chromium] › tests\e2e\chat.spec.js:18:1 › muestra el reproductor para un video válido de YouTube (854ms)
-  ok 3 [chromium] › tests\e2e\chat.spec.js:25:1 › no abre un alert ni interpreta scripts enviados por el usuario (897ms)
+  ok 1 [chromium] › tests\e2e\chat.spec.js:11:1 › muestra una imagen válida en el chat (1.3s)
+  ok 2 [chromium] › tests\e2e\chat.spec.js:20:1 › muestra el reproductor para un video válido de YouTube (1.5s)
+  ok 3 [chromium] › tests\e2e\chat.spec.js:28:1 › no abre un alert ni interpreta scripts enviados por el usuario (1.0s)
 
-  3 passed (7.5s)
-[WebServer] (node:25516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+  3 passed (6.9s)
+[WebServer] (node:20080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-(node:8648) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:12752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)

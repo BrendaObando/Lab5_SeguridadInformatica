@@ -13,6 +13,8 @@ test('muestra una imagen válida en el chat', async ({ page }) => {
   const image = page.getByAltText('Imagen compartida en el chat');
   await expect(image).toHaveAttribute('src', 'https://placehold.co/120x80.png');
   await expect(image).toBeVisible();
+  await expect(image).toHaveJSProperty('complete', true);
+  expect(await image.evaluate((element) => element.naturalWidth)).toBeGreaterThan(0);
 });
 
 test('muestra el reproductor para un video válido de YouTube', async ({ page }) => {
@@ -20,6 +22,7 @@ test('muestra el reproductor para un video válido de YouTube', async ({ page })
   const frame = page.getByTitle('Video de YouTube compartido en el chat');
   await expect(frame).toHaveAttribute('src', 'https://www.youtube.com/embed/qYwlqx-JLok');
   await expect(frame).toBeVisible();
+  await expect.poll(() => page.frames().map((childFrame) => childFrame.url()).join('\n')).toContain('youtube.com/embed/qYwlqx-JLok');
 });
 
 test('no abre un alert ni interpreta scripts enviados por el usuario', async ({ page }) => {
@@ -29,5 +32,6 @@ test('no abre un alert ni interpreta scripts enviados por el usuario', async ({ 
   await sendMessage(page, payload);
   await expect(page.locator('#messages li')).toContainText(payload);
   await expect(page.locator('#messages script')).toHaveCount(0);
+  await page.waitForTimeout(250);
   expect(dialogOpened).toBe(false);
 });

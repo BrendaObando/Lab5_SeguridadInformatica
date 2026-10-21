@@ -8,7 +8,7 @@ fs.mkdirSync(evidence, { recursive: true });
 const commands = [
   ['resultado-unitarias.txt', ['npm.cmd', 'test']],
   ['resultado-integracion.txt', ['npm.cmd', 'run', 'test:integration']],
-  ['resultado-e2e.txt', ['npx.cmd', 'playwright', 'test', '--project=chromium', '--reporter=list']],
+  ['resultado-e2e.txt', ['npx.cmd', 'playwright', 'test', '--project=chromium', '--headed', '--reporter=list']],
 ];
 
 let failed = false;

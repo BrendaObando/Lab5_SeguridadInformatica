@@ -12,5 +12,5 @@
     √ preserva el script como texto y no lo convierte en marcado ejecutable
 
 
-  5 passing (12ms)
+  5 passing (10ms)
 
