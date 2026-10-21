@@ -1,0 +1,16 @@
+
+> test
+> mocha
+
+
+
+  una-lib
+    √ valida teléfonos con formato permitido
+    √ acepta únicamente URLs HTTP(S) con extensión de imagen permitida
+    √ acepta URLs válidas de YouTube y obtiene el id
+    √ clasifica imágenes y videos para mostrarlos sin HTML del usuario
+    √ preserva el script como texto y no lo convierte en marcado ejecutable
+
+
+  5 passing (12ms)
+

@@ -1,0 +1,15 @@
+
+> test:integration
+> jest tests/integration --runInBand --env=node
+
+PASS tests/integration/chat.test.js
+  integración Socket.IO: backend y una-lib
+    √ acepta y clasifica una URL de imagen válida (96 ms)
+    √ acepta y transforma una URL válida de video (30 ms)
+    √ no interpreta un script: lo devuelve como texto seguro (14 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        2.002 s
+Ran all test suites matching /tests\\integration/i.
