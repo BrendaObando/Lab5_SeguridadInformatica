@@ -7,14 +7,13 @@ on:
 permissions:
   contents: read
 
-defaults:
-  run:
-    working-directory: 09a7068a-ddc2-45e7-99d6-ab8904546743/antes
-
 jobs:
   test:
     name: Pruebas automáticas
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 09a7068a-ddc2-45e7-99d6-ab8904546743/antes
     steps:
       - name: Obtener código
         uses: actions/checkout@v4
