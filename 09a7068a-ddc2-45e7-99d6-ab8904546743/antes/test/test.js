@@ -1,9 +1,8 @@
 const val = require('../libs/unalib');
 const assert = require('assert');
-
 describe('una-lib', function () {
   it('valida teléfonos con formato permitido', function () {
-    assert.equal(val.is_valid_phone('8297-8547'), false);
+    assert.equal(val.is_valid_phone('8297-8547'), true);
     assert.equal(val.is_valid_phone('8297p-8547'), false);
   });
   it('acepta únicamente URLs HTTP(S) con extensión de imagen permitida', function () {
