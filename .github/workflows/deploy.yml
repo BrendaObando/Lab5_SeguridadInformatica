@@ -1,4 +1,4 @@
-name: Desplegar chat en Render
+name: Validar y desplegar chat en Render
 
 on:
   push:
@@ -7,8 +7,34 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: 09a7068a-ddc2-45e7-99d6-ab8904546743/antes
+
 jobs:
+  test:
+    name: Pruebas automáticas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: 09a7068a-ddc2-45e7-99d6-ab8904546743/antes/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar pruebas unitarias
+        run: npm test
+
   deploy:
+    name: Solicitar despliegue en Render
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Solicitar despliegue
