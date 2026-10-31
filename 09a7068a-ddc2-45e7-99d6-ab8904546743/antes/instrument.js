@@ -1,4 +1,5 @@
 // CommonJS: initialize before Express and Socket.IO are imported.
+const telemetry = require('./telemetry');
 const Sentry = require('@sentry/node');
 
 function sanitizeEvent(event) {
@@ -13,7 +14,7 @@ function sanitizeEvent(event) {
   return event;
 }
 
-if (process.env.SENTRY_DSN) {
+if (process.env.SENTRY_DSN && !telemetry.enabled) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     environment: process.env.SENTRY_ENVIRONMENT || (process.env.RENDER ? 'render' : 'local'),

@@ -1,0 +1,18 @@
+config:
+  target: http://127.0.0.1:3000
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: Carga local de 300 mensajes
+  defaults:
+    headers:
+      content-type: application/json
+scenarios:
+  - name: Un mensaje por usuario virtual
+    flow:
+      - post:
+          url: /api/messages
+          json:
+            nombre: Artillery local
+            mensaje: Mensaje de carga del laboratorio 7
+            color: "#123456"

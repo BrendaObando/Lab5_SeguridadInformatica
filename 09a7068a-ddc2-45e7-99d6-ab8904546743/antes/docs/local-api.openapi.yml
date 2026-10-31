@@ -1,0 +1,40 @@
+openapi: 3.0.3
+info:
+  title: UNA Chat local lab adapter
+  version: 1.0.0
+  description: Enabled only with UNA_CHAT_LOCAL_API=true outside Render. Uses the existing message processor and broadcasts to connected chat clients.
+servers:
+  - url: http://127.0.0.1:3000
+paths:
+  /api/messages:
+    post:
+      summary: Process and broadcast one local chat message
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mensaje]
+              properties:
+                mensaje: {type: string, maxLength: 4096}
+                nombre: {type: string}
+                color: {type: string}
+      responses:
+        '200':
+          description: Normalized message with nombre, color, mensaje and tipo
+        '400':
+          description: Missing or invalid mensaje, or invalid JSON
+        '413':
+          description: JSON body exceeds 16 KiB
+        '404':
+          description: Local adapter is disabled, including on Render
+  /__lab/local-error:
+    post:
+      summary: Generate a controlled local HTTP 500
+      responses:
+        '500':
+          description: Deliberate error for telemetry verification
+        '404':
+          description: Local adapter is disabled, including on Render
