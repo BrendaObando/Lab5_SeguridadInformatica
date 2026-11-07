@@ -9,9 +9,9 @@ const http = require('http');
 function createChatServer() {
   const app = express();
   const server = http.createServer(app);
-  const io = new Server(server);
+  const io = new Server(server, { cors: { origin: 'http://localhost:5173', methods: ['GET', 'POST'] } });
   app.use(telemetry.httpMiddleware);
-  app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+  app.use(express.static(path.join(__dirname, 'dist')));
   const processMessage = (message) => telemetry.processMessage(() => validation.validateMessage(message));
   // HTTP adapter shares the exact processor and broadcast used by Socket.IO.
   // Render cannot enable these lab-only routes.
